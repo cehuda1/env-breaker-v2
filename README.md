@@ -3,7 +3,7 @@
 Pendeteksi `.env` adalah alat sederhana untuk memindai dan mendeteksi file `.env` yang tidak diatur dengan benar pada situs-situs target. Alat ini dirancang untuk membantu mengidentifikasi kemungkinan kebocoran informasi sensitif yang terkait dengan file `.env` pada aplikasi web.
 
 ## Cara Kerja
-Alat ini menggunakan skrip PHP untuk melakukan pemindaian pada daftar situs target yang diberikan. Skrip ini mengirim permintaan HTTP ke setiap situs dan memeriksa keberadaan file `.env`. Jika file `.env` ditemukan dengan status respons 200 OK, alat ini memberikan laporan dan memberi tahu pengguna bahwa file `.env` telah ditemukan.
+Alat ini menggunakan skrip Ptyhon untuk melakukan pemindaian pada daftar situs target yang diberikan. Skrip ini mengirim permintaan HTTP ke setiap situs dan memeriksa keberadaan file `.env`. Jika file `.env` ditemukan dengan status respons 200 OK, alat ini memberikan laporan dan memberi tahu pengguna bahwa file `.env` telah ditemukan.
 
 ## Fitur Utama
 - Pemindaian otomatis untuk mencari file `.env` pada situs-situs target.
@@ -12,11 +12,11 @@ Alat ini menggunakan skrip PHP untuk melakukan pemindaian pada daftar situs targ
 - Antarmuka baris perintah sederhana untuk penggunaan yang mudah.
 
 ## Penggunaan
-1. Pastikan Anda memiliki PHP yang terinstal di sistem Anda.
+1. Pastikan Anda memiliki python yang terinstal di sistem Anda.
 2. Siapkan file "target.txt" yang berisi daftar situs target yang ingin Anda periksa.
 3. Jalankan alat ini dengan perintah berikut:
    ```
-   php env-breaker.php target.txt
+   python3 env-breaker2.py -h
    ```
 4. Alat akan memulai pemindaian dan menampilkan laporan saat file `.env` ditemukan.
 5. Jika Anda ingin menyimpan informasi dari file `.env` yang ditemukan, Anda dapat menyetujui prompt yang ditampilkan oleh alat.
