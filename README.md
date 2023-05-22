@@ -16,7 +16,7 @@ Alat ini menggunakan skrip Ptyhon untuk melakukan pemindaian pada daftar situs t
 2. Siapkan file "target.txt" yang berisi daftar situs target yang ingin Anda periksa.
 3. Jalankan alat ini dengan perintah berikut:
    ```
-   python3 env-breaker2.py -h
+   python3 breaker.py -h
    ```
 4. Alat akan memulai pemindaian dan menampilkan laporan saat file `.env` ditemukan.
 5. Jika Anda ingin menyimpan informasi dari file `.env` yang ditemukan, Anda dapat menyetujui prompt yang ditampilkan oleh alat.
@@ -25,6 +25,19 @@ Pastikan untuk membaca dokumentasi lengkap dan panduan penggunaan di [link dokum
 
 ## Catatan
 Alat ini hanya dimaksudkan untuk tujuan pengujian keamanan dan harus digunakan dengan izin pemilik situs target. Pengguna bertanggung jawab penuh atas penggunaan alat ini. Pengembang tidak bertanggung jawab atas penyalahgunaan atau kerusakan yang disebabkan oleh penggunaan alat ini.
+
+usage: breaker.py [-h] -l LIST -w WORDLIST [-t THREADS]
+**
+File Scanner
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -l LIST, --list LIST  List of target URLs
+  -w WORDLIST, --wordlist WORDLIST
+                        Wordlist file
+  -t THREADS, --threads THREADS
+                        Maximum number of threads**
+
 
 ## Kontribusi
 Jika Anda menemukan masalah atau memiliki saran untuk perbaikan, silakan buka *issue* atau ajukan *pull request* di repositori ini. Kami menerima kontribusi dari komunitas dan berharap dapat meningkatkan alat ini bersama.
