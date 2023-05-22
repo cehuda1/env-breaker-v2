@@ -26,8 +26,10 @@ Pastikan untuk membaca dokumentasi lengkap dan panduan penggunaan di [link dokum
 ## Catatan
 Alat ini hanya dimaksudkan untuk tujuan pengujian keamanan dan harus digunakan dengan izin pemilik situs target. Pengguna bertanggung jawab penuh atas penggunaan alat ini. Pengembang tidak bertanggung jawab atas penyalahgunaan atau kerusakan yang disebabkan oleh penggunaan alat ini.
 
-usage: breaker.py [-h] -l LIST -w WORDLIST [-t THREADS]
-**
+
+##usage:
+breaker.py [-h] -l LIST -w WORDLIST [-t THREADS]
+
 File Scanner
 
 optional arguments:
@@ -36,7 +38,8 @@ optional arguments:
   -w WORDLIST, --wordlist WORDLIST
                         Wordlist file
   -t THREADS, --threads THREADS
-                        Maximum number of threads**
+                        Maximum number of threads
+![gambar](https://github.com/cehuda1/env-breaker-v2/assets/121425666/4aa33b82-8d2f-40b8-bd5c-3afa503c1616)
 
 
 ## Kontribusi
