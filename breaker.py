@@ -3,7 +3,18 @@ import argparse
 import threading
 from urllib.parse import urlparse
 
+def should_skip_scan(url):
+    skip_keywords = ["cpanel", "webmail"]
+    for keyword in skip_keywords:
+        if keyword in url.lower():
+            return True
+    return False
+
 def scan_wordlist(url, wordlist):
+    if should_skip_scan(url):
+        print(f"[*] Skipping scan for {url}")
+        return
+
     with open(wordlist) as f:
         for line in f:
             word = line.strip()
@@ -11,7 +22,12 @@ def scan_wordlist(url, wordlist):
             try:
                 response = requests.head(test_url)
                 content_length = int(response.headers.get('content-length', 0))
-                if response.status_code == 200 and "The requested URL was rejected" not in response.text and "Request Rejected" not in response.text and content_length > 300:
+                if (
+                    response.status_code == 200
+                    and "The requested URL was rejected" not in response.text
+                    and "Request Rejected" not in response.text
+                    and content_length > 300
+                ):
                     print("[+] Found: " + test_url + " [Content Length: " + str(content_length) + " bytes]")
             except:
                 pass
