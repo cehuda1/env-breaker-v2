@@ -1,7 +1,9 @@
+import os
+import sys
 import requests
 import argparse
 import threading
-from urllib.parse import urlparse
+import subprocess
 
 def should_skip_scan(url):
     skip_keywords = ["cpanel", "webmail"]
@@ -10,61 +12,84 @@ def should_skip_scan(url):
             return True
     return False
 
-def scan_wordlist(url, wordlist):
-    if should_skip_scan(url):
-        print(f"[*] Skipping scan for {url}")
-        return
+def get_subdomains(domain):
+    try:
+        result = subprocess.check_output(["subfinder", "-d", domain], universal_newlines=True)
+        subdomains = result.strip().split('\n')
+        return subdomains
+    except subprocess.CalledProcessError:
+        print("[!] Error menjalankan Subfinder. Pastikan sudah terinstal dan ada di PATH.")
+        return []
 
-    with open(wordlist) as f:
-        for line in f:
-            word = line.strip()
-            test_url = url + "/" + word
-            try:
-                response = requests.head(test_url)
-                content_length = int(response.headers.get('content-length', 0))
-                if (
-                    response.status_code == 200
-                    and "The requested URL was rejected" not in response.text
-                    and "Request Rejected" not in response.text
-                    and content_length > 300
-                ):
-                    print("[+] Found: " + test_url + " [Content Length: " + str(content_length) + " bytes]")
-            except:
-                pass
-
-def scan_urls(urls, wordlist, max_threads=10):
+def scan_subdomains(subdomains, endpoints, max_threads=10):
     thread_pool = []
-    for url in urls:
-        # Add https:// to URL if protocol is not provided
-        parsed_url = urlparse(url)
-        if not parsed_url.scheme:
-            url = "https://" + url
+    found_urls = []
 
-        print("[*] Scanning: " + url)
-        t = threading.Thread(target=scan_wordlist, args=(url, wordlist))
-        thread_pool.append(t)
-        t.start()
+    def scan_url(url):
+        try:
+            response = requests.head(url)
+            content_length = int(response.headers.get('content-length', 0))
+            if (
+                response.status_code == 200
+                and "The requested URL was rejected" not in response.text
+                and "Request Rejected" not in response.text
+                and content_length > 300
+            ):
+                found_urls.append(url)
+        except:
+            pass
 
-        # Join threads if max_threads is reached
-        if len(thread_pool) == max_threads:
-            for t in thread_pool:
-                t.join()
-            thread_pool = []
+    for subdomain in subdomains:
+        for endpoint in endpoints:
+            test_url = "https://" + subdomain + "/" + endpoint
+            t = threading.Thread(target=scan_url, args=(test_url,))
+            thread_pool.append(t)
+            t.start()
 
-    # Join remaining threads
+            # Gabungkan thread jika mencapai jumlah maksimum
+            if len(thread_pool) == max_threads:
+                for t in thread_pool:
+                    t.join()
+                thread_pool = []
+
+    # Gabungkan sisa thread
     for t in thread_pool:
         t.join()
 
+    return found_urls
+
+def update_script():
+    print("[*] Mengambil pembaruan skrip dari repositori GitHub...")
+    try:
+        os.system("git pull origin main")
+        print("[+] Skrip berhasil diperbarui.")
+    except:
+        print("[!] Gagal memperbarui skrip.")
+
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='File Scanner')
-    parser.add_argument('-l', '--list', help='List of target URLs', required=True)
-    parser.add_argument('-w', '--wordlist', help='Wordlist file', required=True)
-    parser.add_argument('-t', '--threads', type=int, default=10, help='Maximum number of threads')
+    parser = argparse.ArgumentParser(description='Pemindai Berkas')
+    parser.add_argument('-d', '--domain', help='Nama domain', required=True)
+    parser.add_argument('--update', action='store_true', help='Mengambil pembaruan skrip dari repositori GitHub')
+    parser.add_argument('-t', '--threads', type=int, default=5000, help='Jumlah maksimum thread')
     args = parser.parse_args()
 
-    with open(args.list) as f:
-        urls = [line.strip() for line in f]
+    if args.update:
+        update_script()
+        sys.exit(0)
 
-    print("[*] Starting file scanning...")
-    scan_urls(urls, args.wordlist, max_threads=args.threads)
-    print("[*] File scanning complete.")
+    subdomains = get_subdomains(args.domain)
+    if not subdomains:
+        print("[!] Tidak ditemukan subdomain. Keluar.")
+    else:
+        print(f"[*] Ditemukan {len(subdomains)} subdomain untuk {args.domain}")
+        endpoints = [
+            ".env"
+        ]
+        print("[*] Memulai pemindaian berkas...")
+        found_urls = scan_subdomains(subdomains, endpoints, max_threads=args.threads)
+        print("[*] Pemindaian berkas selesai.")
+        
+        if found_urls:
+            print("[+] Endpoint yang ditemukan:")
+            for url in found_urls:
+                print(url)
